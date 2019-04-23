@@ -1,7 +1,7 @@
 from unittest import TestCase
-from django.db.backends.mysql.base import DatabaseWrapper as MySQLDatabaseWrapper
+from django.db.backends.mysql.client import DatabaseClient as MySQLDatabaseClient
 
-from backend.rds.base import DatabaseWrapper
+from backend.rds.client import DatabaseClient
 
 CALLABLE_PASSWORD = 'generated'
 STRING_PASSWORD = 'fish'
@@ -31,19 +31,17 @@ def generate_pw():
     return CALLABLE_PASSWORD
 
 
-class DatabaseWrapperTest(TestCase):
-
-    def test_get_callable_connection_params(self):
+class DatabaseClientTest(TestCase):
+    def test_get_callable_cmd_args(self):
         conn_settings = SETTINGS_DICT
         conn_settings['PASSWORD'] = generate_pw
-        rds_params = DatabaseWrapper(conn_settings).get_connection_params()
-        self.assertEqual(rds_params['passwd'], CALLABLE_PASSWORD)
+        rds_args = DatabaseClient.settings_to_cmd_args(conn_settings)
+        self.assertEqual(rds_args[2], f'--password={CALLABLE_PASSWORD}')
 
-    def test_get_connection_params_strings(self):
+    def test_get_cmd_args_strings(self):
         conn_settings = SETTINGS_DICT
         conn_settings['PASSWORD'] = STRING_PASSWORD
-        rds_params = DatabaseWrapper(conn_settings).get_connection_params()
-        mysql_params = MySQLDatabaseWrapper(
-            conn_settings).get_connection_params()
-        self.assertEqual(rds_params, mysql_params)
-        self.assertEqual(rds_params['passwd'], STRING_PASSWORD)
+        rds_args = DatabaseClient.settings_to_cmd_args(conn_settings)
+        mysql_args = MySQLDatabaseClient.settings_to_cmd_args(conn_settings)
+        self.assertEqual(rds_args, mysql_args)
+        self.assertEqual(rds_args[2], f'--password={STRING_PASSWORD}')

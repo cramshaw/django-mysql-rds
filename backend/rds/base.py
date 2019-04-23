@@ -1,11 +1,12 @@
 from django.db.backends.mysql import base
 
-
-class CursorWrapper(base.CursorWrapper):
-    pass
+from .client import DatabaseClient
 
 
 class DatabaseWrapper(base.DatabaseWrapper):
+
+    client_class = DatabaseClient
+
     def get_connection_params(self):
         kwargs = super().get_connection_params()
         if callable(kwargs['passwd']):
