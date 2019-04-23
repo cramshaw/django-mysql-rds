@@ -1,7 +1,7 @@
 from unittest import TestCase
 from django.db.backends.mysql.base import DatabaseWrapper as MySQLDatabaseWrapper
 
-from backend.rds.base import DatabaseWrapper
+from mysql_rds.backend.base import DatabaseWrapper
 
 CALLABLE_PASSWORD = 'generated'
 STRING_PASSWORD = 'fish'

@@ -1,7 +1,7 @@
 from unittest import TestCase
 from django.db.backends.mysql.client import DatabaseClient as MySQLDatabaseClient
 
-from backend.rds.client import DatabaseClient
+from mysql_rds.backend.base import DatabaseClient
 
 CALLABLE_PASSWORD = 'generated'
 STRING_PASSWORD = 'fish'
