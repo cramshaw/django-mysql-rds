@@ -94,8 +94,12 @@ Tests require [https://pypi.org/project/mysqlclient/](mysqlclient) installed.
 python -m unittest tests/test*
 ```
 
-## Building
+## Packaging
 
+Bump version in setup.py
+then:
 ```
+rm -rf dist/
 python3 setup.py sdist bdist_wheel
+python3 -m twine upload dist/*
 ```
