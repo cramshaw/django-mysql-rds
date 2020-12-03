@@ -35,13 +35,14 @@ class DatabaseClientTest(TestCase):
     def test_get_callable_cmd_args(self):
         conn_settings = SETTINGS_DICT
         conn_settings['PASSWORD'] = generate_pw
-        rds_args = DatabaseClient.settings_to_cmd_args(conn_settings)
+        rds_args = DatabaseClient.settings_to_cmd_args(conn_settings, [])
         self.assertEqual(rds_args[2], f'--password={CALLABLE_PASSWORD}')
 
     def test_get_cmd_args_strings(self):
         conn_settings = SETTINGS_DICT
         conn_settings['PASSWORD'] = STRING_PASSWORD
-        rds_args = DatabaseClient.settings_to_cmd_args(conn_settings)
-        mysql_args = MySQLDatabaseClient.settings_to_cmd_args(conn_settings)
+        rds_args = DatabaseClient.settings_to_cmd_args(conn_settings, [])
+        mysql_args = MySQLDatabaseClient.settings_to_cmd_args(
+            conn_settings, [])
         self.assertEqual(rds_args, mysql_args)
         self.assertEqual(rds_args[2], f'--password={STRING_PASSWORD}')
