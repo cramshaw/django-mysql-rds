@@ -11,6 +11,17 @@ class DatabaseWrapper(base.DatabaseWrapper):
 
     def get_connection_params(self):
         kwargs = super().get_connection_params()
-        if callable(kwargs['passwd']):
-            kwargs['passwd'] = kwargs['passwd']()
+        possible_password_kwargs = (
+            'password',
+            'passwd',
+        )
+
+        def get_value(value):
+            return value() if callable(value) else value
+
+        password_kwargs = {
+            k: get_value(v)
+            for k, v in kwargs.items() if k in possible_password_kwargs
+        }
+        kwargs.update(password_kwargs)
         return kwargs
