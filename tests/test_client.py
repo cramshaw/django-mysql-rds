@@ -32,17 +32,53 @@ def generate_pw():
 
 
 class DatabaseClientTest(TestCase):
+    @staticmethod
+    def client_settings_to_cmd_args_env_wrapper(
+        *args,
+        client=DatabaseClient
+    ) -> tuple:
+        """
+        Wraps client class method to work with Django 3.5 and below.
+        Passes args.
+        Needed because of a signature and return type change in:
+            https://github.com/django/django/commit/bbe6fbb87
+        """
+        fallback_method_name = 'settings_to_cmd_args'
+        new_method_name = f'{fallback_method_name}_env'
+        method = getattr(client, new_method_name, fallback_method_name)
+        output = method(*args)
+        if type(output) is not tuple:
+            output = output, None
+        return output
+
     def test_get_callable_cmd_args(self):
         conn_settings = SETTINGS_DICT
         conn_settings['PASSWORD'] = generate_pw
-        rds_args = DatabaseClient.settings_to_cmd_args(conn_settings, [])
-        self.assertEqual(rds_args[2], f'--password={CALLABLE_PASSWORD}')
+        rds_args, env = self.client_settings_to_cmd_args_env_wrapper(
+            conn_settings, []
+        )
+
+        if env:
+            self.assertEqual(env['MYSQL_PWD'], CALLABLE_PASSWORD)
+        else:
+            self.assertEqual(rds_args[2], f'--password={CALLABLE_PASSWORD}')
 
     def test_get_cmd_args_strings(self):
         conn_settings = SETTINGS_DICT
         conn_settings['PASSWORD'] = STRING_PASSWORD
-        rds_args = DatabaseClient.settings_to_cmd_args(conn_settings, [])
-        mysql_args = MySQLDatabaseClient.settings_to_cmd_args(
-            conn_settings, [])
+        rds_args, rds_env = self.client_settings_to_cmd_args_env_wrapper(
+            conn_settings, []
+        )
+
+        if rds_env:
+            self.assertEqual(rds_env['MYSQL_PWD'], STRING_PASSWORD)
+        else:
+            self.assertEqual(rds_args[2], f'--password={STRING_PASSWORD}')
+
+        mysql_args, mysql_env = self.client_settings_to_cmd_args_env_wrapper(
+            conn_settings,
+            [],
+            client=MySQLDatabaseClient
+        )
         self.assertEqual(rds_args, mysql_args)
-        self.assertEqual(rds_args[2], f'--password={STRING_PASSWORD}')
+        self.assertEqual(rds_env, mysql_env)
