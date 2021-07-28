@@ -37,7 +37,8 @@ class DatabaseWrapperTest(TestCase):
         conn_settings = SETTINGS_DICT
         conn_settings['PASSWORD'] = generate_pw
         rds_params = DatabaseWrapper(conn_settings).get_connection_params()
-        self.assertEqual(rds_params['passwd'], CALLABLE_PASSWORD)
+        password = rds_params.get('password', 'passwd')
+        self.assertEqual(password, CALLABLE_PASSWORD)
 
     def test_get_connection_params_strings(self):
         conn_settings = SETTINGS_DICT
@@ -46,4 +47,5 @@ class DatabaseWrapperTest(TestCase):
         mysql_params = MySQLDatabaseWrapper(
             conn_settings).get_connection_params()
         self.assertEqual(rds_params, mysql_params)
-        self.assertEqual(rds_params['passwd'], STRING_PASSWORD)
+        password = rds_params.get('password', 'passwd')
+        self.assertEqual(password, STRING_PASSWORD)
