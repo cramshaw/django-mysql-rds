@@ -60,13 +60,13 @@ def generate_pw():
 ## Installation
 
 ```
-pip install django-mysql-rds
+$ pip install django-mysql-rds
 ```
 
 or
 
 ```
-git clone git@github.com:cramshaw/django-mysql-rds.git
+$ git clone git@github.com:cramshaw/django-mysql-rds.git
 ```
 
 ## Why?
@@ -90,10 +90,17 @@ I only needed this to work for MySQL. I haven't explored whether RDS does the sa
 
 ## Running Tests
 
-Tests require [https://pypi.org/project/mysqlclient/](mysqlclient) installed.
+Tests require [mysqlclient](https://pypi.org/project/mysqlclient/) installed.
 
 ```
-python -m unittest tests/test*
+$ brew install mysql-client
+$ export PATH="/usr/local/opt/mysql-client/bin:$PATH"
+```
+
+Then to run:
+
+```
+$ python -m unittest tests/test*
 ```
 
 ## Packaging
@@ -102,7 +109,7 @@ Bump version in setup.py
 then:
 
 ```
-rm -rf dist/
-python3 setup.py sdist bdist_wheel
-python3 -m twine upload dist/*
+$ rm -rf dist/
+$ python3 setup.py sdist bdist_wheel
+$ python3 -m twine upload dist/*
 ```
