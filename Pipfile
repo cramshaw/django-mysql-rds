@@ -7,7 +7,7 @@ verify_ssl = true
 autopep8 = "*"
 
 [packages]
-django = "~=3.2.5"
+django = "~=3.2.14"
 mysqlclient = "*"
 
 [requires]
